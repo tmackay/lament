@@ -493,7 +493,7 @@ if(g==2||g==undef&&part=="core")translate([0,0,core_h2-cube_w/2])difference(){
                 linear_extrude(height=gh[i]+AT,scale=1+gh[i]/(dt[i]*cp[i]/360)*sqrt(3),slices=1)
                     circle($fn=dt[i]*2,r=dt[i]*cp[i]/360-ChamferGearsBottom*min(cp[i]/(2*tan(P))+tol,depth_ratio*cp[i]*PI/180+tol));
             // cutout overhanging teeth at angle
-            if(i>0&&dt[i-1]!=dt[i])rotate([0,0,180/dt[i-1]*(1+2*nt[i-1]*s[i-1]-pt[i-1]%2)])
+            if(i>0&&dt[i-1]!=dt[i])rotate([0,0,180/dt[i-1]*(1+2*nt[i-1]-pt[i-1]%2)])
                 gear2DS(dt[i-1],cp[i-1]*PI/180,P,depth_ratio,tol,gh[i]);
             
             // chamfer top gear
@@ -600,7 +600,7 @@ if(g>2||g==undef&&part=="core")translate([0,0,core_h2-cube_w/2]){
                         linear_extrude(height=gh[i]+AT,scale=1+gh[i]/(pt[i]*cp[i]/360)*sqrt(3),slices=1)
                             circle($fn=pt[i]*2,r=pt[i]*cp[i]/360-ChamferGearsBottom*min(cp[i]/(2*tan(P))+tol,depth_ratio*cp[i]*PI/180+tol));                
                     // cutout overhanging teeth at angle
-                    if(i>0&&pt[i-1]!=pt[i])rotate([0,0,180/pt[i-1]*(-2*nt[i-1]*s[i-1])])
+                    if(i>0&&pt[i-1]!=pt[i])rotate([0,0,180/pt[i-1]*(-2*nt[i-1])])
                         gear2DS(pt[i-1],cp[i-1]*PI/180,P,depth_ratio,tol,gh[i]);
                     // chamfer top gear
                     if(ChamferGearsTop<1&&i==modules-1)translate([0,0,gh[i]+TT])rotate(90/pt[i])mirror([0,0,1])
@@ -663,7 +663,7 @@ module overhang(number_of_teeth,height){
         minkowski(){
             linear_extrude(AT)children();
             intersection(){
-                cylinder(r1=0,r2=height,h=height,$fn=6);
+                cylinder(r1=0,r2=height*sqrt(3),h=height,$fn=6); // 60 degree overhang
                 translate([-height,AT-2*height,0])cube(2*height); // segments overlap
             }
         }
