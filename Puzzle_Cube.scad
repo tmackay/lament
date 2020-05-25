@@ -43,7 +43,7 @@ pt = [5, 6, 7, 7, 6, 5];
 // For additional gear ratios we can add or subtract extra teeth (in multiples of planets) from rings but the profile will be further from ideal
 of = 0*gh_;
 // number of teeth to twist across
-nt = pt/pt[modules-1];
+nt = pt/pt[0];
 // Sun gear multiplier
 sgm = 2; //[1:1:5]
 // For fused sun gears, we require them to be a multiple of the planet teeth
@@ -78,7 +78,8 @@ rtn = dt+2*pt;
 // scale ring gear (approximate profile shift)
 s=[for(i=[0:modules-1])rtn[i]/rt[i]];
 // scale helix angle to mesh
-ha=[for(i=[0:modules-1])atan(PI*nt[i]*s[i]*cp[i]/90/gh[i])];
+ha=[for(i=[0:modules-1])atan(PI*nt[i]*cp[i]/90/gh[i])];
+has=[for(i=[0:modules-1])atan(PI*nt[i]*s[i]*cp[i]/90/gh[i])];
 
 // Shaft diameter
 shaft_d_ = 6; //[0:0.1:25]
@@ -461,7 +462,7 @@ if(g==1||g==undef&&part=="core")translate([0,0,core_h2-cube_w/2]){
         }
         // negative volume
         for (i=[0:modules-1])translate([0,0,addl(gh,i)]){
-            planetgear(t1=rt[i],gear_h=gh[i],tol=-tol,helix_angle=ha[i],cp=s[i]*cp[i],depth_ratio=depth_ratio,P=P,AT=ST);
+            planetgear(t1=rt[i],gear_h=gh[i],tol=-tol,helix_angle=has[i],cp=s[i]*cp[i],depth_ratio=depth_ratio,P=P,AT=ST);
             // chamfer bottom gear
             if(ChamferGearsBottom<1&&i==0)translate([0,0,-TT])
                 linear_extrude(height=(rt[i]*s[i]*cp[i]/360)/sqrt(3),scale=0,slices=1)
