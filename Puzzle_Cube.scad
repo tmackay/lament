@@ -84,8 +84,8 @@ has=[for(i=[0:modules-1])atan(PI*nt[i]*s[i]*cp[i]/90/gh[i])];
 // Shaft diameter
 shaft_d_ = 6; //[0:0.1:25]
 shaft_d = scl*shaft_d_;
-// Spring inner diameter
-spring_d_ = 4.5; //[0:0.1:25]
+// Spring outer diameter
+spring_d_ = 5; //[0:0.1:25]
 spring_d = scl*spring_d_;
 // False gate depth
 fg_ = 1; //[0:0.1:5]
@@ -303,8 +303,8 @@ module lamenthalf(turns=false){
             }
             // TODO: use of tol for vertical clearances - use multiple of layer_h instead
             translate([0,0,core_h2-cube_w/2-tol-AT])cylinder(d=r,h=tol+AT);
-            translate([0,0,core_h2-cube_w/2-AT])cylinder(d=shaft_d-2*tol,h=gh[0]);
-            translate([0,0,core_h2+gh[0]-cube_w/2-ST])cylinder(d=spring_d,h=gh[0]/2);
+            translate([0,0,core_h2-cube_w/2-AT])cylinder(d=shaft_d-2*tol,h=gh[0]+ST);
+            //translate([0,0,core_h2+gh[0]-cube_w/2-ST])cylinder(d=spring_d,h=gh[0]/2);
             
             // outer teeth
             intersection(){
@@ -502,9 +502,14 @@ if(g==2||g==undef&&part=="core")translate([0,0,core_h2-cube_w/2])difference(){
                     circle($fn=dt[i]*2,r=dt[i]*cp[i]/360-ChamferGearsTop*min(cp[i]/(2*tan(P))+tol,depth_ratio*cp[i]*PI/180+tol));
         }
     }
+
     // cylinder shaft_d
-    translate([0,0,-AT])cylinder(d=shaft_d,h=addl(gh,modules)+ST,$fn=24);
-    
+    translate([0,0,-spring_d/2])cylinder(d=shaft_d,h=core_h/2,$fn=24);
+    translate([0,0,core_h/2+spring_d/2])cylinder(d=shaft_d,h=core_h/2,$fn=24);
+    translate([0,0,core_h/2-spring_d/2])cylinder(d=spring_d,h=spring_d,$fn=24);
+    translate([0,0,core_h/2-spring_d/2])cylinder(d2=spring_d,d1=shaft_d,h=(shaft_d-spring_d)/2,$fn=24);
+    translate([0,0,core_h/2+spring_d/2-(shaft_d-spring_d)/2])cylinder(d1=spring_d,d2=shaft_d,h=(shaft_d-spring_d)/2,$fn=24);
+
     // vertical track
     intersection(){
         r=(shaft_d+outer_w/sqrt(2))/2;
@@ -585,6 +590,9 @@ if(g==2||g==undef&&part=="core")translate([0,0,core_h2-cube_w/2])difference(){
     }
     //translate([0,0,gh[0]/2])cylinder(r=r1+AT,h=h,$fn=24); // non-manifold tweak
     //translate([0,0,gh[0]/2+h])cylinder(r=r1+tol,h=addl(gh,modules-1)-gh[0]/2-h,$fn=24); // non-manifold tweak
+
+    // temporary section (for fiddling with spring choke point)
+    //translate(-cube_w*[1,0,1])cube(2*cube_w);
 }
 
 // planets
